@@ -37,7 +37,13 @@ function Sidebar() {
                     </li>
                     <li className="nav-item">
                         <Link to="/Ratings" className="nav-link">
-                        Ratings</Link>
+                        Ratings
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/Settings" className="nav-link">
+                        Settings
+                        </Link>
                     </li>
                 </ul>
             </nav>
