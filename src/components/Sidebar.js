@@ -35,6 +35,10 @@ function Sidebar() {
                             Deal
                         </Link>
                     </li>
+                    <li className="nav-item">
+                        <Link to="/Ratings" className="nav-link">
+                        Ratings</Link>
+                    </li>
                 </ul>
             </nav>
             
