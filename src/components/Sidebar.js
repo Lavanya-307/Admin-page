@@ -16,7 +16,7 @@ function Sidebar() {
             <nav className="sidebar-nav p-3">
                 <ul className="nav flex-column">
                     <li className="nav-item">
-                        <Link to="/dashboard" className="nav-link">
+                        <Link to="/" className="nav-link">
                             Dashboard
                         </Link>
                     </li>
