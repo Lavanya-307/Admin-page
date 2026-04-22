@@ -1,19 +1,40 @@
-function Navbar() {
+import { useState } from 'react';
+import { 
+  MagnifyingGlassIcon, 
+  UserCircleIcon,
+  Bars3Icon
+} from "@heroicons/react/24/outline";
+
+function Navbar({ onMenuClick }) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showProfile, setShowProfile] = useState(false);
+
   return (
-    <nav className="navbar bg-white border-bottom p-3">
-      <div className="container-fluid justify-content-center">
-        <div className="input-group" style={{ maxWidth: "500px" }}>
-          <span className="input-group-text">
-            <i className="bi bi-search"></i>
-          </span>
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search for rooms"
-          />
+    <header className="bg-white border-b border-neutral-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        {/* Mobile menu button */}
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 transition-colors"
+        >
+          <Bars3Icon className="w-6 h-6 text-neutral-700" />
+        </button>
+
+        {/* Search Bar */}
+        <div className="flex-1 max-w-xl mx-4">
+          <div className="relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search rooms, guests, bookings..."
+              className="input-field pl-10"
+            />
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }
 

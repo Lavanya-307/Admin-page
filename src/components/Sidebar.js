@@ -1,60 +1,72 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { 
+  HomeIcon, 
+  UserGroupIcon, 
+  BuildingOfficeIcon, 
+  TagIcon, 
+  StarIcon, 
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon
+} from "@heroicons/react/24/outline";
 
 function Sidebar() {
-    const sidebarStyle = {
-        height: "100vh",
-        position: "fixed",
-        width: "250px"
-    };
+  const location = useLocation();
 
-    return (
-        <div className="bg-light sidebar-container d-flex flex-column" style={sidebarStyle}>
-            <div className="sidebar-header p-3">
-                <h5>Abilio Luxury Stay</h5>
-            </div>
-            
-            <nav className="sidebar-nav p-3">
-                <ul className="nav flex-column">
-                    <li className="nav-item">
-                        <Link to="/" className="nav-link">
-                            Dashboard
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/guest" className="nav-link">
-                            Guests
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/rooms" className="nav-link">
-                            Rooms
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/deal" className="nav-link">
-                            Deal
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/Ratings" className="nav-link">
-                        Ratings
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/Settings" className="nav-link">
-                        Settings
-                        </Link>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div className="sidebar-footer p-3 mt-auto">
-                <button className="btn btn-secondary w-50">
-                    Logout
-                </button>
-            </div>
+  const menuItems = [
+    { path: "/", label: "Dashboard", icon: HomeIcon },
+    { path: "/guest", label: "Guests", icon: UserGroupIcon },
+    { path: "/rooms", label: "Rooms", icon: BuildingOfficeIcon },
+    { path: "/deal", label: "Deals", icon: TagIcon },
+    { path: "/Ratings", label: "Ratings", icon: StarIcon },
+    { path: "/Settings", label: "Settings", icon: Cog6ToothIcon },
+  ];
+
+  return (
+    <div className="h-full flex flex-col bg-white">
+      {/* Logo */}
+      <div className="p-6 border-b border-neutral-200">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
+            <BuildingOfficeIcon className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-neutral-900">Abilio</h1>
+            <p className="text-xs text-neutral-500">Luxury Stay Admin</p>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          const Icon = item.icon;
+          
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`sidebar-item ${isActive ? 'active' : ''}`}
+            >
+              <Icon className="w-5 h-5 mr-3" />
+              <span>{item.label}</span>
+              {isActive && (
+                <div className="ml-auto w-2 h-2 bg-primary-600 rounded-full" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t border-neutral-200">
+        <button className="sidebar-item w-full text-red-600 hover:bg-red-50">
+          <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Sidebar;

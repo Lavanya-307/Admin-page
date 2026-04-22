@@ -1,12 +1,31 @@
-import Layout from "../components/Layout";
+import React, {useEffect,useState} from "react";
+import axios from "axios";
 
 function Guest() {
+     const[data,setData]=useState([]);
+    
+
+    useEffect(()=>{
+        axios.get("https://api.restful-api.dev/objects")
+        .then((res)=>setData(res.data.users))
+        .catch((err)=>console.log("Error fetching guests:", err));
+    },[]);
+
+
     return (
-        <Layout>
+        <div>
             <div className="page-header">
-                <h2>Guest Requirements</h2>
+                <h1 style={{ fontWeight: 'bold' }}>Guest List</h1>
             </div>
-        </Layout>
+            <div>
+            <input 
+            type="text"
+            placeholder="Search guest..."
+            onChange={(e)=>setSearch(e.target.value)}/>
+            
+          
+            </div>
+        </div>
     );
 }
 

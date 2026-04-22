@@ -1,12 +1,8 @@
-import Layout from "../components/Layout";
-
 function Rating() {
     return (
-        <Layout>
-            <div className="page-header">
-                <h2>Guest Ratings</h2>
-            </div>
-        </Layout>
+        <div className="page-header">
+            <h1 style={{ fontWeight: 'bold' }}>Guest Ratings</h1>
+        </div>
     );
 }
 
