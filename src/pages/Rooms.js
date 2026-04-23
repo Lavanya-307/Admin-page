@@ -17,7 +17,7 @@ function Rooms() {
                 id: 1,
                 title: "AC Deluxe Room",
                 category: "AC",
-                price: 299.99,
+                price: 2500,
                 description: "Air-conditioned deluxe room with king size bed",
                 bedType: "King Size",
                 amenities: ["AC", "WiFi", "TV", "Mini Bar"]
@@ -26,7 +26,7 @@ function Rooms() {
                 id: 2,
                 title: "Non-AC Standard Room",
                 category: "Non-AC",
-                price: 149.99,
+                price: 1300,
                 description: "Standard room without AC, double bed available",
                 bedType: "Double Bed",
                 amenities: ["WiFi", "TV", "Fan"]
@@ -35,7 +35,7 @@ function Rooms() {
                 id: 3,
                 title: "AC Double Bed Room",
                 category: "AC",
-                price: 249.99,
+                price: 3000,
                 description: "Air-conditioned room with comfortable double bed",
                 bedType: "Double Bed",
                 amenities: ["AC", "WiFi", "TV", "Room Service"]
@@ -44,7 +44,7 @@ function Rooms() {
                 id: 4,
                 title: "Non-AC Single Room",
                 category: "Non-AC",
-                price: 99.99,
+                price: 700,
                 description: "Budget-friendly non-AC room with single bed",
                 bedType: "Single Bed",
                 amenities: ["WiFi", "Fan", "Basic Amenities"]
@@ -53,7 +53,7 @@ function Rooms() {
                 id: 5,
                 title: "AC Suite Room",
                 category: "AC",
-                price: 499.99,
+                price: 2500,
                 description: "Luxury suite with AC, living area and premium amenities",
                 bedType: "King Size",
                 amenities: ["AC", "WiFi", "TV", "Mini Bar", "Living Area", "Premium View"]
@@ -62,7 +62,7 @@ function Rooms() {
                 id: 6,
                 title: "Non-AC Family Room",
                 category: "Non-AC",
-                price: 199.99,
+                price: 1000,
                 description: "Spacious family room with multiple beds",
                 bedType: "Multiple Beds",
                 amenities: ["WiFi", "TV", "Fan", "Family Friendly"]
@@ -209,7 +209,7 @@ function Rooms() {
                         <h3 style={{ fontSize: "16px", marginBottom: "10px" }}>{item.title}</h3>
                         <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Type:</strong> {item.category}</p>
                         <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Bed:</strong> {item.bedType}</p>
-                        <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Price:</strong> ${item.price}/night</p>
+                        <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Price:</strong> Rs.{item.price}/Day</p>
                         <p style={{ fontSize: "12px", margin: "5px 0", lineHeight: "1.4" }}><strong>Description:</strong> {item.description}</p>
                         <p style={{ fontSize: "12px", margin: "5px 0", lineHeight: "1.4" }}><strong>Amenities:</strong> {item.amenities.join(", ")}</p>
 

@@ -23,19 +23,6 @@ function Sidebar() {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      {/* Logo */}
-      <div className="p-6 border-b border-neutral-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center">
-            <BuildingOfficeIcon className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-neutral-900">Abilio</h1>
-            <p className="text-xs text-neutral-500">Luxury Stay Admin</p>
-          </div>
-        </div>
-      </div>
-
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
         {menuItems.map((item) => {
