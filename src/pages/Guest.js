@@ -3,6 +3,7 @@ import axios from "axios";
 
 function Guest() {
      const[data,setData]=useState([]);
+     const[search,setSearch]=useState('');
     
 
     useEffect(()=>{
