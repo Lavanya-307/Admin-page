@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { 
   MagnifyingGlassIcon, 
-  UserCircleIcon,
   Bars3Icon
 } from "@heroicons/react/24/outline";
 
 function Navbar({ onMenuClick }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showProfile, setShowProfile] = useState(false);
 
   return (
     <header className="bg-white border-b border-neutral-200 px-6 py-4">
