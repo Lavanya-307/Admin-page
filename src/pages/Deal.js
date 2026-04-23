@@ -10,6 +10,57 @@ import {
   TrashIcon
 } from "@heroicons/react/24/outline";
 
+const sampleDeals = [
+    {
+        id: 1,
+        title: "Weekend Getaway",
+        discount: "20%",
+        discountType: "percentage",
+        minimumNights: 2,
+        expiryDate: "2026-5-31",
+        isActive: true,
+        timesUsed: 45,
+        maxUses: 100,
+        tagline: "Perfect for weekend stays"
+    },
+    {
+        id: 2,
+        title: "Early Bird Special",
+        discount: "$50",
+        discountType: "fixed",
+        minimumNights: 3,
+        expiryDate: "2026-04-30",
+        isActive: true,
+        timesUsed: 32,
+        maxUses: 50,
+        tagline: "Book 7 days in advance"
+    },
+    {
+        id: 3,
+        title: "Summer Vacation",
+        discount: "15%",
+        discountType: "percentage",
+        minimumNights: 5,
+        expiryDate: "2026-02-30",
+        isActive: false,
+        timesUsed: 78,
+        maxUses: 100,
+        tagline: "Summer special offer"
+    },
+    {
+        id: 4,
+        title: "Business Package",
+        discount: "10%",
+        discountType: "percentage",
+        minimumNights: 1,
+        expiryDate: "2024-06-01",
+        isActive: true,
+        timesUsed: 12,
+        maxUses: 30,
+        tagline: "For business travelers"
+    }
+];
+
 function Deal() {
     const [deals, setDeals] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -43,57 +94,6 @@ function Deal() {
             count: "3",
             icon: CalendarIcon,
             theme: "orange"
-        }
-    ];
-
-    const sampleDeals = [
-        {
-            id: 1,
-            title: "Weekend Getaway",
-            discount: "20%",
-            discountType: "percentage",
-            minimumNights: 2,
-            expiryDate: "2026-5-31",
-            isActive: true,
-            timesUsed: 45,
-            maxUses: 100,
-            tagline: "Perfect for weekend stays"
-        },
-        {
-            id: 2,
-            title: "Early Bird Special",
-            discount: "$50",
-            discountType: "fixed",
-            minimumNights: 3,
-            expiryDate: "2026-04-30",
-            isActive: true,
-            timesUsed: 32,
-            maxUses: 50,
-            tagline: "Book 7 days in advance"
-        },
-        {
-            id: 3,
-            title: "Summer Vacation",
-            discount: "15%",
-            discountType: "percentage",
-            minimumNights: 5,
-            expiryDate: "2026-02-30",
-            isActive: false,
-            timesUsed: 78,
-            maxUses: 100,
-            tagline: "Summer special offer"
-        },
-        {
-            id: 4,
-            title: "Business Package",
-            discount: "10%",
-            discountType: "percentage",
-            minimumNights: 1,
-            expiryDate: "2024-06-01",
-            isActive: true,
-            timesUsed: 12,
-            maxUses: 30,
-            tagline: "For business travelers"
         }
     ];
 
