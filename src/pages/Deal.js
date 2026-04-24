@@ -88,6 +88,10 @@ function Deal() {
                 // Filter to show expiring deals only
                 setSearchQuery('expiring');
                 break;
+            default:
+                // Default action - scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                break;
         }
     };
 
@@ -139,6 +143,13 @@ function Deal() {
                 count: expiringDeals.toString(),
                 icon: CalendarIcon,
                 theme: "orange"
+            },
+            {
+                id: 'expired-deals',
+                label: "Expired Deals",
+                count: expiredDeals.toString(),
+                icon: XCircleIcon,
+                theme: "red"
             }
         ];
     };

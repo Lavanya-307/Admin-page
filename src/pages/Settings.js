@@ -4,10 +4,8 @@ import {
   BellIcon,
   UserIcon,
   ComputerDesktopIcon,
-  GlobeAltIcon,
   CreditCardIcon,
   ShieldCheckIcon,
-  DocumentTextIcon
 } from "@heroicons/react/24/outline";
 
 function Settings() {
