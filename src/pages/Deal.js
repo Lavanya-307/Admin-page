@@ -66,37 +66,86 @@ function Deal() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    const dashboardStats = [
-        {
-            id: 'active-deals',
-            label: "Active Deals",
-            count: "12",
-            icon: TagIcon,
-            theme: "blue"
-        },
-        {
-            id: 'total-revenue',
-            label: "Total Revenue",
-            count: "$8,450",
-            icon: CurrencyDollarIcon,
-            theme: "green"
-        },
-        {
-            id: 'redeemed-today',
-            label: "Redeemed Today",
-            count: "28",
-            icon: CheckCircleIcon,
-            theme: "emerald"
-        },
-        {
-            id: 'expiring-soon',
-            label: "Expiring Soon",
-            count: "3",
-            icon: CalendarIcon,
-            theme: "orange"
+    const handleCardClick = (cardId) => {
+        // Navigate to relevant section based on card clicked
+        switch(cardId) {
+            case 'active-deals':
+                // Scroll to active deals in table
+                const activeDealElement = document.querySelector('table tbody tr:first-child');
+                if (activeDealElement) {
+                    activeDealElement.scrollIntoView({ behavior: 'smooth' });
+                }
+                break;
+            case 'total-revenue':
+                // Filter to show revenue-generating deals only
+                setSearchQuery('active');
+                break;
+            case 'redeemed-today':
+                // Sort deals by most used
+                setDeals(prev => [...prev].sort((a, b) => b.timesUsed - a.timesUsed));
+                break;
+            case 'expiring-soon':
+                // Filter to show expiring deals only
+                setSearchQuery('expiring');
+                break;
         }
-    ];
+    };
 
+    const getDashboardStats = () => {
+        const activeDeals = deals.filter(deal => deal.isActive).length;
+        const expiredDeals = deals.filter(deal => !deal.isActive).length;
+        const totalRevenue = deals
+            .filter(deal => deal.isActive)
+            .reduce((sum, deal) => {
+                if (deal.discountType === 'fixed') {
+                    return sum + (deal.timesUsed * parseInt(deal.discount.replace('$', '')));
+                } else {
+                    return sum + (deal.timesUsed * 100); // Assume avg room price $100 for percentage discounts
+                }
+            }, 0);
+        const todayRedemptions = Math.floor(deals.reduce((sum, deal) => sum + deal.timesUsed, 0) / deals.length);
+        const expiringDeals = deals.filter(deal => {
+            const expiryDate = new Date(deal.expiryDate);
+            const today = new Date();
+            const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+            return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
+        }).length;
+
+        return [
+            {
+                id: 'active-deals',
+                label: "Active Deals",
+                count: activeDeals.toString(),
+                icon: TagIcon,
+                theme: "blue"
+            },
+            {
+                id: 'total-revenue',
+                label: "Total Revenue",
+                count: `$${totalRevenue.toLocaleString()}`,
+                icon: CurrencyDollarIcon,
+                theme: "green"
+            },
+            {
+                id: 'redeemed-today',
+                label: "Redeemed Today",
+                count: todayRedemptions.toString(),
+                icon: CheckCircleIcon,
+                theme: "emerald"
+            },
+            {
+                id: 'expiring-soon',
+                label: "Expiring Soon",
+                count: expiringDeals.toString(),
+                icon: CalendarIcon,
+                theme: "orange"
+            }
+        ];
+    };
+
+    const dashboardStats = getDashboardStats();
+
+    
     useEffect(() => {
         setDeals(sampleDeals);
     }, []);
@@ -136,8 +185,8 @@ function Deal() {
     return (
         <div className="p-6">
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">Deals & Offers</h1>
-                <p className="text-gray-600 mt-2">Manage your hotel's special offers and promotional deals</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Deals & Offers</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your hotel's special offers and promotional deals</p>
             </header>
 
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -145,13 +194,17 @@ function Deal() {
                     const Icon = stat.icon;
                     const colors = getThemeColors(stat.theme);
                     return (
-                        <div key={stat.id} className={`${colors.bg} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200`}>
+                        <div 
+                            key={stat.id} 
+                            className={`${colors.bg} dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200 dark:border-gray-700 cursor-pointer hover:scale-105`}
+                            onClick={() => handleCardClick(stat.id)}
+                        >
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
-                                    <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                                    <p className="text-2xl font-bold text-gray-900 mt-2">{stat.count}</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.label}</p>
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{stat.count}</p>
                                 </div>
-                                <div className="p-3 rounded-full bg-white">
+                                <div className="p-3 rounded-full bg-white dark:bg-gray-700">
                                     <Icon className={`w-6 h-6 ${colors.text}`} />
                                 </div>
                             </div>
@@ -160,7 +213,7 @@ function Deal() {
                 })}
             </section>
 
-            <section className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <section className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div className="flex-1 w-full sm:max-w-md">
                         <input
@@ -168,7 +221,7 @@ function Deal() {
                             placeholder="Search deals..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                     <button
@@ -181,30 +234,30 @@ function Deal() {
                 </div>
             </section>
 
-            <main className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">All Deals</h2>
+            <main className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">All Deals</h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Deal
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Discount
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Minimum Stay
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Expires
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Used
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Status
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -212,34 +265,34 @@ function Deal() {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             {filteredDeals.map((deal) => {
                                 const StatusIcon = getStatusIcon(deal.isActive);
                                 const usagePercentage = (deal.timesUsed / deal.maxUses) * 100;
                                 
                                 return (
-                                    <tr key={deal.id} className="hover:bg-gray-50">
+                                    <tr key={deal.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div>
-                                                <div className="text-sm font-medium text-gray-900">{deal.title}</div>
-                                                <div className="text-sm text-gray-500">{deal.tagline}</div>
+                                                <div className="text-sm font-medium text-gray-900 dark:text-white">{deal.title}</div>
+                                                <div className="text-sm text-gray-500 dark:text-gray-400">{deal.tagline}</div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="text-sm font-semibold text-gray-900">
+                                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                                 {deal.discountType === 'percentage' ? deal.discount : `$${deal.discount}`}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             {deal.minimumNights} nights
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                             {deal.expiryDate}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className="text-sm text-gray-900">{deal.timesUsed}/{deal.maxUses}</div>
-                                                <div className="ml-2 w-16 bg-gray-200 rounded-full h-2">
+                                                <div className="text-sm text-gray-900 dark:text-white">{deal.timesUsed}/{deal.maxUses}</div>
+                                                <div className="ml-2 w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                                     <div 
                                                         className="bg-blue-500 h-2 rounded-full" 
                                                         style={{ width: `${usagePercentage}%` }}

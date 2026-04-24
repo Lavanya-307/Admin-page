@@ -6,9 +6,11 @@ import Rooms from "./pages/Rooms";
 import Deal from "./pages/Deal";
 import Ratings from "./pages/Rating";
 import Settings from "./pages/Settings";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   return (
+    <ThemeProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout><Dashboard /></Layout>} />
@@ -20,6 +22,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

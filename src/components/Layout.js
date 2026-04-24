@@ -2,35 +2,35 @@ import { useState } from 'react';
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-function Layout({ children }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+const Layout = ({ children }) => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             {/* Navbar at top */}
-            <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+            <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
             
             {/* Content area with sidebar */}
             <div style={{ display: "flex", flex: 1 }}>
                 {/* Sidebar */}
                 <div className={`
-                    fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-neutral-200 transform transition-transform duration-300 ease-in-out
-                    lg:relative lg:translate-x-0
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                    fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-neutral-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out
+                    lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
+                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 `}>
                     <Sidebar />
                 </div>
 
                 {/* Overlay for mobile */}
-                {sidebarOpen && (
+                {isSidebarOpen && (
                     <div 
                         className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                        onClick={() => setSidebarOpen(false)}
+                        onClick={() => setIsSidebarOpen(false)}
                     />
                 )}
 
                 {/* Main content */}
-                <main style={{ flex: 1, padding: "20px" }}>
+                <main className="flex-1 p-5 bg-gray-50 dark:bg-gray-900">
                     {children}
                 </main>
             </div>

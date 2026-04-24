@@ -1,79 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { hotelRooms } from "../data/roomData";
 
-function Rooms() {
-    const [data, setData] = useState([]);
-    const [search, setSearch] = useState("");
-    const [editingRoom, setEditingRoom] = useState(null);
-    const [isCreating, setIsCreating] = useState(false);
+const Rooms = () => {
+    const [rooms, setRooms] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentRoom, setCurrentRoom] = useState(null);
+    const [isAddingNew, setIsAddingNew] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const roomsPerPage = 6;
 
     useEffect(() => {
-        fetchRooms();
+        loadRooms();
     }, []);
 
-    const fetchRooms = async () => {
-        // Custom room data with hotel room types
-        const hotelRooms = [
-            {
-                id: 1,
-                title: "AC Deluxe Room",
-                category: "AC",
-                price: 2500,
-                description: "Air-conditioned deluxe room with king size bed",
-                bedType: "King Size",
-                amenities: ["AC", "WiFi", "TV", "Mini Bar"]
-            },
-            {
-                id: 2,
-                title: "Non-AC Standard Room",
-                category: "Non-AC",
-                price: 1300,
-                description: "Standard room without AC, double bed available",
-                bedType: "Double Bed",
-                amenities: ["WiFi", "TV", "Fan"]
-            },
-            {
-                id: 3,
-                title: "AC Double Bed Room",
-                category: "AC",
-                price: 3000,
-                description: "Air-conditioned room with comfortable double bed",
-                bedType: "Double Bed",
-                amenities: ["AC", "WiFi", "TV", "Room Service"]
-            },
-            {
-                id: 4,
-                title: "Non-AC Single Room",
-                category: "Non-AC",
-                price: 700,
-                description: "Budget-friendly non-AC room with single bed",
-                bedType: "Single Bed",
-                amenities: ["WiFi", "Fan", "Basic Amenities"]
-            },
-            {
-                id: 5,
-                title: "AC Suite Room",
-                category: "AC",
-                price: 2500,
-                description: "Luxury suite with AC, living area and premium amenities",
-                bedType: "King Size",
-                amenities: ["AC", "WiFi", "TV", "Mini Bar", "Living Area", "Premium View"]
-            },
-            {
-                id: 6,
-                title: "Non-AC Family Room",
-                category: "Non-AC",
-                price: 1000,
-                description: "Spacious family room with multiple beds",
-                bedType: "Multiple Beds",
-                amenities: ["WiFi", "TV", "Fan", "Family Friendly"]
-            }
-        ];
-        setData(hotelRooms);
+    const loadRooms = () => {
+        setRooms(hotelRooms);
     };
 
-    const handleCreate = async () => {
-        setIsCreating(true);
-        setEditingRoom({
+    const startAddingRoom = () => {
+        setIsAddingNew(true);
+        setCurrentRoom({
             title: "",
             category: "AC",
             price: 0,
@@ -83,147 +29,185 @@ function Rooms() {
         });
     };
 
-    const handleSaveNew = () => {
-        if (editingRoom && editingRoom.title) {
+    const saveNewRoom = () => {
+        if (currentRoom && currentRoom.title) {
             const newRoom = {
-                ...editingRoom,
+                ...currentRoom,
                 id: Date.now()
             };
-            setData(prevData => [...prevData, newRoom]);
-            setIsCreating(false);
-            setEditingRoom(null);
+            setRooms(prevRooms => [...prevRooms, newRoom]);
+            setIsAddingNew(false);
+            setCurrentRoom(null);
         }
     };
 
-    const handleEdit = (room) => {
-        setEditingRoom(room);
+    const editRoom = (room) => {
+        setCurrentRoom(room);
     };
 
-    const handleUpdate = () => {
-        if (editingRoom) {
-            setData(prevData =>
-                prevData.map(item =>
-                    item.id === editingRoom.id ? editingRoom : item
+    const updateRoom = () => {
+        if (currentRoom) {
+            setRooms(prevRooms =>
+                prevRooms.map(room =>
+                    room.id === currentRoom.id ? currentRoom : room
                 )
             );
-            setEditingRoom(null);
+            setCurrentRoom(null);
         }
     };
 
-    const handleCancel = () => {
-        setEditingRoom(null);
-        setIsCreating(false);
+    const cancelEdit = () => {
+        setCurrentRoom(null);
+        setIsAddingNew(false);
     };
 
-    const handleDelete = async (id) => {
+    const deleteRoom = (roomId) => {
         // Remove room from local data
-        setData(prevData => prevData.filter(item => item.id !== id));
+        setRooms(prevRooms => prevRooms.filter(room => room.id !== roomId));
     };
 
-    const filteredRooms = data.filter((item) => {
-        const title = item.title?.toLowerCase() || "";
-        const category = item.category?.toLowerCase() || "";
-        const description = item.description?.toLowerCase() || "";
+    const getFilteredRooms = () => {
+        return rooms.filter((room) => {
+            const title = room.title?.toLowerCase() || "";
+            const category = room.category?.toLowerCase() || "";
+            const description = room.description?.toLowerCase() || "";
 
-        return (
-            title.includes(search.toLowerCase()) ||
-            category.includes(search.toLowerCase()) ||
-            description.includes(search.toLowerCase())
-        );
-    });
+            return (
+                title.includes(searchTerm.toLowerCase()) ||
+                category.includes(searchTerm.toLowerCase()) ||
+                description.includes(searchTerm.toLowerCase())
+            );
+        });
+    };
+
+    const filteredRooms = getFilteredRooms();
+    
+    // Pagination logic
+    const indexOfLastRoom = currentPage * roomsPerPage;
+    const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
+    const currentRooms = filteredRooms.slice(indexOfFirstRoom, indexOfLastRoom);
+    const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
 
     return (
-        <div>
-            <div>
-                <h1 style={{ fontWeight: 'bold' }}>Available Rooms</h1>
+        <div className="p-6">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Available Rooms</h1>
             </div>
-            <input
-                type="text"
-                placeholder="Search  for rooms..."
-                onChange={(e) => setSearch(e.target.value)}
-                style={{ border: "1px solid #ccc", borderRadius: "4px", padding: "8px", width: "300px" }}
-            />
+            <div className="flex gap-4 mb-6">
+                <input
+                    type="text"
+                    placeholder="Search for rooms..."
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button onClick={startAddingRoom} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Add New Room</button>
+            </div>
 
-            <button onClick={handleCreate} style={{ padding: "8px 16px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "4px", fontSize: "14px", cursor: "pointer", marginLeft: "10px" }}>Add New Rooms</button>
-
-            {editingRoom && (
-                <div style={{ marginBottom: "20px", padding: "20px", border: "2px solid #007bff", borderRadius: "8px", backgroundColor: "#f8f9fa" }}>
-                    <h3>{isCreating ? "Create New Room" : "Edit Room"}</h3>
-                    <input
-                        type="text"
-                        placeholder="Room Title"
-                        value={editingRoom.title}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, title: e.target.value })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    />
-                    <select
-                        value={editingRoom.category}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, category: e.target.value })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    >
-                        <option value="AC">AC</option>
-                        <option value="Non-AC">Non-AC</option>
-                    </select>
-                    <input
-                        type="text"
-                        placeholder="Bed Type"
-                        value={editingRoom.bedType}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, bedType: e.target.value })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Price"
-                        value={editingRoom.price}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, price: parseFloat(e.target.value) })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Description"
-                        value={editingRoom.description}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, description: e.target.value })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Amenities (comma separated)"
-                        value={editingRoom.amenities.join(", ")}
-                        onChange={(e) => setEditingRoom({ ...editingRoom, amenities: e.target.value.split(", ").map(a => a.trim()) })}
-                        style={{ marginBottom: "10px", padding: "5px", width: "100%" }}
-                    />
-                    <div>
-                        <button onClick={isCreating ? handleSaveNew : handleUpdate} style={{ marginRight: "10px", padding: "5px 10px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "4px" }}>
-                            {isCreating ? "Create" : "Update"}
-                        </button>
-                        <button onClick={handleCancel} style={{ padding: "5px 10px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px" }}>
-                            Cancel
-                        </button>
+            {currentRoom && (
+                <div className="mb-6 p-6 border-2 border-blue-500 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{isAddingNew ? "Create New Room" : "Edit Room"}</h3>
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Room Title"
+                            value={currentRoom.title}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, title: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <select
+                            value={currentRoom.category}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, category: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="AC">AC</option>
+                            <option value="Non-AC">Non-AC</option>
+                        </select>
+                        <input
+                            type="text"
+                            placeholder="Bed Type"
+                            value={currentRoom.bedType}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, bedType: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                            type="number"
+                            placeholder="Price"
+                            value={currentRoom.price}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, price: parseFloat(e.target.value) })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Description"
+                            value={currentRoom.description}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, description: e.target.value })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Amenities (comma separated)"
+                            value={currentRoom.amenities.join(", ")}
+                            onChange={(e) => setCurrentRoom({ ...currentRoom, amenities: e.target.value.split(", ").map(a => a.trim()) })}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <div className="flex gap-2">
+                            <button onClick={isAddingNew ? saveNewRoom : updateRoom} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                {isAddingNew ? "Create" : "Update"}
+                            </button>
+                            <button onClick={cancelEdit} className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginTop: "20px" }}>
-                {filteredRooms.map((item) => (
-                    <div key={item.id} style={{ padding: "15px", border: "1px solid #ddd", borderRadius: "8px", backgroundColor: "#fff" }}>
-                        <h3 style={{ fontSize: "16px", marginBottom: "10px" }}>{item.title}</h3>
-                        <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Type:</strong> {item.category}</p>
-                        <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Bed:</strong> {item.bedType}</p>
-                        <p style={{ fontSize: "14px", margin: "5px 0" }}><strong>Price:</strong> Rs.{item.price}/Day</p>
-                        <p style={{ fontSize: "12px", margin: "5px 0", lineHeight: "1.4" }}><strong>Description:</strong> {item.description}</p>
-                        <p style={{ fontSize: "12px", margin: "5px 0", lineHeight: "1.4" }}><strong>Amenities:</strong> {item.amenities.join(", ")}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {currentRooms.map((room) => (
+                    <div key={room.id} className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-shadow">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{room.title}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2"><strong>Type:</strong> {room.category}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2"><strong>Bed:</strong> {room.bedType}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2"><strong>Price:</strong> Rs.{room.price}/Day</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 leading-relaxed"><strong>Description:</strong> {room.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed"><strong>Amenities:</strong> {room.amenities.join(", ")}</p>
 
-                        <div style={{ marginTop: "15px" }}>
-                            <button onClick={() => handleEdit(item)} style={{ marginRight: "10px", padding: "6px 12px", fontSize: "12px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px" }}>
+                        <div className="flex gap-2">
+                            <button onClick={() => editRoom(room)} className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                                 Edit
                             </button>
-                            <button onClick={() => handleDelete(item.id)} style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "#ff4444", color: "white", border: "none", borderRadius: "4px" }}>
+                            <button onClick={() => deleteRoom(room.id)} className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
                                 Delete
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
+            
+            {/* Pagination Controls */}
+            {filteredRooms.length > roomsPerPage && (
+                <div className="flex justify-center items-center gap-4 mt-8">
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        Previous
+                    </button>
+                    
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
