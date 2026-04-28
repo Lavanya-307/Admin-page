@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
+import { hotelGuests } from '../data/guestData';
 
 const Guest = () => {
-    const [guests, setGuests] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
-    const [currentGuest, setCurrentGuest] = useState(null);
-    const [editForm, setEditForm] = useState({
+    // State management for guest data
+    const [guestList, setGuestList] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedGuest, setSelectedGuest] = useState(null);
+    const [guestEditForm, setGuestEditForm] = useState({
         name: '',
         color: '',
         capacity: '',
@@ -15,89 +17,79 @@ const Guest = () => {
     });
     
 
+    // Load guest data on component mount
     useEffect(() => {
-        fetchGuests();
+        loadGuestData();
     }, []);
 
-    const fetchGuests = () => {
-        axios.get('https://api.restful-api.dev/objects')
-            .then(response => {
-                setGuests(response.data);
-            })
-            .catch(error => {
-                console.error('Failed to load guests:', error);
-            });
+    // Load guests from data source
+    const loadGuestData = () => {
+        console.log('Loading guest data...', hotelGuests);
+        setGuestList(hotelGuests);
     };
 
-    const filteredGuests = guests.filter(guest => 
-        guest.name && guest.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // Filter guests based on search query
+    const getFilteredGuests = guestList.filter(guest => 
+        guest.name && guest.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const startEdit = (guest) => {
-        setCurrentGuest(guest);
-        setEditForm({
+    // Start editing a guest
+    const beginGuestEdit = (guest) => {
+        setSelectedGuest(guest);
+        setGuestEditForm({
             name: guest.name || '',
             color: guest.data?.color || '',
             capacity: guest.data?.capacity || '',
             year: guest.data?.year || '',
             price: guest.data?.price || ''
         });
-        setIsEditing(true);
+        setShowEditModal(true);
     };
 
-    const deleteGuest = (guestId) => {
+    // Delete a guest from the list
+    const removeGuest = (guestId) => {
         if (window.confirm('Are you sure you want to delete this guest?')) {
-            axios.delete(`https://api.restful-api.dev/objects/${guestId}`)
-                .then(() => {
-                    setGuests(guests.filter(guest => guest.id !== guestId));
-                    alert('Guest deleted successfully!');
-                })
-                .catch(error => {
-                    console.error('Failed to delete guest:', error);
-                    alert('Error deleting guest');
-                });
+            setGuestList(guestList.filter(guest => guest.id !== guestId));
+            alert('Guest deleted successfully!');
         }
     };
 
-    const updateGuest = (e) => {
-        e.preventDefault();
+    // Update guest information
+    const saveGuestUpdates = (event) => {
+        event.preventDefault();
         
-        const updatedData = {
-            name: editForm.name,
-            data: {
-                color: editForm.color,
-                capacity: editForm.capacity,
-                year: editForm.year,
-                price: editForm.price
-            }
+        const updatedGuestData = {
+            ...selectedGuest,
+            name: guestEditForm.name,
+            color: guestEditForm.color,
+            capacity: guestEditForm.capacity,
+            year: guestEditForm.year,
+            price: guestEditForm.price
         };
 
-        axios.put(`https://api.restful-api.dev/objects/${currentGuest.id}`, updatedData)
-            .then(response => {
-                setGuests(guests.map(guest => 
-                    guest.id === currentGuest.id ? response.data : guest
-                ));
-                closeEditModal();
-                alert('Guest updated successfully!');
-            })
-            .catch(error => {
-                console.error('Failed to update guest:', error);
-                alert('Error updating guest');
-            });
+        setGuestList(guestList.map(guest => 
+            guest.id === selectedGuest.id ? updatedGuestData : guest
+        ));
+        closeEditDialog();
+        alert('Guest updated successfully!');
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setEditForm(prevState => ({
-            ...prevState,
-            [name]: value
+    // Handle form input changes
+    const handleFormInputChange = (event) => {
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        
+        setGuestEditForm(previousForm => ({
+            ...previousForm,
+            [fieldName]: fieldValue
         }));
     };
 
-    const closeEditModal = () => {
-        setIsEditing(false);
-        setCurrentGuest(null);
-        setEditForm({
+    // Close the edit dialog
+    const closeEditDialog = () => {
+        setShowEditModal(false);
+        setSelectedGuest(null);
+        setGuestEditForm({
             name: '',
             color: '',
             capacity: '',
@@ -120,8 +112,8 @@ const Guest = () => {
                         <input
                             type="text"
                             placeholder="Search guest..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            value={searchQuery}
+                            onChange={(event) => setSearchQuery(event.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
@@ -160,7 +152,7 @@ const Guest = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {filteredGuests.map((guest) => (
+                            {getFilteredGuests.map((guest) => (
                                 <tr key={guest.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white">{guest.name}</div>
@@ -182,13 +174,13 @@ const Guest = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button
-                                            onClick={() => startEdit(guest)}
+                                            onClick={() => beginGuestEdit(guest)}
                                             className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3"
                                         >
                                             Edit
                                         </button>
                                         <button
-                                            onClick={() => deleteGuest(guest.id)}
+                                            onClick={() => removeGuest(guest.id)}
                                             className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                         >
                                             Delete
@@ -201,11 +193,11 @@ const Guest = () => {
                 </div>
             </main>
 
-            {isEditing && (
+            {showEditModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Edit Guest</h2>
-                        <form onSubmit={updateGuest}>
+                        <form onSubmit={saveGuestUpdates}>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Name
@@ -213,8 +205,8 @@ const Guest = () => {
                                 <input
                                     type="text"
                                     name="name"
-                                    value={editForm.name}
-                                    onChange={handleInputChange}
+                                    value={guestEditForm.name}
+                                    onChange={handleFormInputChange}
                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
@@ -226,8 +218,8 @@ const Guest = () => {
                                 <input
                                     type="text"
                                     name="color"
-                                    value={editForm.color}
-                                    onChange={handleInputChange}
+                                    value={guestEditForm.color}
+                                    onChange={handleFormInputChange}
                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
@@ -239,8 +231,8 @@ const Guest = () => {
                                 <input
                                     type="text"
                                     name="capacity"
-                                    value={editForm.capacity}
-                                    onChange={handleInputChange}
+                                    value={guestEditForm.capacity}
+                                    onChange={handleFormInputChange}
                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
@@ -252,8 +244,8 @@ const Guest = () => {
                                 <input
                                     type="text"
                                     name="year"
-                                    value={editForm.year}
-                                    onChange={handleInputChange}
+                                    value={guestEditForm.year}
+                                    onChange={handleFormInputChange}
                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
@@ -265,8 +257,8 @@ const Guest = () => {
                                 <input
                                     type="text"
                                     name="price"
-                                    value={editForm.price}
-                                    onChange={handleInputChange}
+                                    value={guestEditForm.price}
+                                    onChange={handleFormInputChange}
                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
@@ -274,7 +266,7 @@ const Guest = () => {
                             <div className="flex justify-end space-x-3">
                                 <button
                                     type="button"
-                                    onClick={closeEditModal}
+                                    onClick={closeEditDialog}
                                     className="px-4 py-2 text-gray-700 bg-gray-200 dark:bg-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500"
                                 >
                                     Cancel

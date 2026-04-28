@@ -2,106 +2,95 @@ import React, { useState } from 'react';
 import { 
   StarIcon,
   MagnifyingGlassIcon,
-//   FunnelIcon,
   ChartBarIcon,
   ArrowTrendingUpIcon
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 
-const sampleRatings = [
-    {
-        id: 1,
-        guestName: "John Smith",
-        roomNumber: "101",
-        checkInDate: "2026-04-15",
-        checkOutDate: "2026-04-18",
-        rating: 5,
-        comment: "Excellent service! The room was clean and staff was very helpful.",
-        category: "Service",
-        status: "verified"
-    },
-    {
-        id: 2,
-        guestName: "Emily Johnson",
-        roomNumber: "205",
-        checkInDate: "2026-04-10",
-        checkOutDate: "2026-04-12",
-        rating: 4,
-        comment: "Great experience overall. Would definitely recommend.",
-        category: "Overall",
-        status: "verified"
-    },
-    {
-        id: 3,
-        guestName: "Michael Brown",
-        roomNumber: "310",
-        checkInDate: "2026-04-08",
-        checkOutDate: "2026-04-11",
-        rating: 3,
-        comment: "Good location but room could use some updates.",
-        category: "Room",
-        status: "pending"
-    },
-    {
-        id: 4,
-        guestName: "Sarah Davis",
-        roomNumber: "112",
-        checkInDate: "2026-04-05",
-        checkOutDate: "2026-04-07",
-        rating: 5,
-        comment: "Perfect stay! Everything was outstanding.",
-        category: "Overall",
-        status: "verified"
-    },
-    {
-        id: 5,
-        guestName: "Robert Wilson",
-        roomNumber: "208",
-        checkInDate: "2026-04-01",
-        checkOutDate: "2026-04-03",
-        rating: 2,
-        comment: "Check-in process was slow and room wasn't ready.",
-        category: "Service",
-        status: "resolved"
-    },
-    {
-        id: 6,
-        guestName: "Lisa Anderson",
-        roomNumber: "315",
-        checkInDate: "2026-03-28",
-        checkOutDate: "2026-03-30",
-        rating: 4,
-        comment: "Nice hotel with good amenities. Breakfast was great.",
-        category: "Amenities",
-        status: "verified"
-    }
-];
-
 const Rating = () => {
-    const [guestRatings, setGuestRatings] = useState(sampleRatings);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
 
+    // Sample data
+    const [guestRatings, setGuestRatings] = useState([
+        {
+            id: 1,
+            guestName: 'John Smith',
+            roomNumber: '101',
+            checkInDate: '2024-01-15',
+            checkOutDate: '2024-01-18',
+            rating: 5,
+            category: 'Service',
+            comment: 'Excellent service, very attentive staff and clean rooms.',
+            status: 'verified'
+        },
+        {
+            id: 2,
+            guestName: 'Emily Johnson',
+            roomNumber: '205',
+            checkInDate: '2024-01-20',
+            checkOutDate: '2024-01-22',
+            rating: 4,
+            category: 'Room',
+            comment: 'Comfortable room with great amenities.',
+            status: 'pending'
+        },
+        {
+            id: 3,
+            guestName: 'Michael Brown',
+            roomNumber: '302',
+            checkInDate: '2024-01-25',
+            checkOutDate: '2024-01-28',
+            rating: 3,
+            category: 'Amenities',
+            comment: 'Good location but amenities could be improved.',
+            status: 'resolved'
+        },
+        {
+            id: 4,
+            guestName: 'Sarah Wilson',
+            roomNumber: '108',
+            checkInDate: '2024-02-01',
+            checkOutDate: '2024-02-03',
+            rating: 5,
+            category: 'Overall',
+            comment: 'Perfect stay! Will definitely come back.',
+            status: 'verified'
+        },
+        {
+            id: 5,
+            guestName: 'David Lee',
+            roomNumber: '210',
+            checkInDate: '2024-02-05',
+            checkOutDate: '2024-02-08',
+            rating: 4,
+            category: 'Service',
+            comment: 'Staff was very helpful and professional.',
+            status: 'pending'
+        }
+    ]);
+
+    const updateRatingStatus = (id, newStatus) => {
+        setGuestRatings(prevRatings =>
+            prevRatings.map(rating =>
+                rating.id === id ? { ...rating, status: newStatus } : rating
+            )
+        );
+    };
+
     const getFilteredRatings = () => {
         return guestRatings.filter(rating => {
-            const matchesSearch = rating.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                rating.roomNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                rating.comment.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearch = searchTerm === '' || 
+                rating.guestName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                rating.roomNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                rating.comment.toLowerCase().includes(searchTerm.toLowerCase());
             
             const matchesCategory = categoryFilter === 'all' || rating.category === categoryFilter;
             const matchesStatus = statusFilter === 'all' || rating.status === statusFilter;
             
             return matchesSearch && matchesCategory && matchesStatus;
         });
-    };
-
-    const updateRatingStatus = (ratingId, newStatus) => {
-        setGuestRatings(prevRatings => 
-            prevRatings.map(rating => 
-                rating.id === ratingId ? { ...rating, status: newStatus } : rating
-            )
-        );
     };
 
     const displayStars = (rating) => {
@@ -330,111 +319,95 @@ const Rating = () => {
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">All Ratings ({filteredRatings.length})</h2>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Guest
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Room
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Stay Dates
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Rating
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Category
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Comment
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Actions
-                                </th>
+                <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Guest
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Room
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Dates
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Rating
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Category
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Comment
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {filteredRatings.map((rating) => (
+                            <tr key={rating.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td className="px-3 py-4 whitespace-nowrap">
+                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{rating.guestName}</div>
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    {rating.roomNumber}
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    <div className="text-xs">
+                                        <div>{rating.checkInDate}</div>
+                                        <div className="text-gray-500 dark:text-gray-400">to {rating.checkOutDate}</div>
+                                    </div>
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap">
+                                    {displayStars(rating.rating)}
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    {rating.category}
+                                </td>
+                                <td className="px-3 py-4">
+                                    <div className="text-sm text-gray-900 dark:text-white max-w-xs truncate" title={rating.comment}>
+                                        {rating.comment}
+                                    </div>
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap">
+                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeStyles(rating.status)}`}>
+                                        {rating.status}
+                                    </span>
+                                </td>
+                                <td className="px-3 py-4 whitespace-nowrap">
+                                    <button
+                                        onClick={() => {
+                                            if (rating.status === 'pending') {
+                                                updateRatingStatus(rating.id, 'verified');
+                                            } else if (rating.status === 'verified') {
+                                                updateRatingStatus(rating.id, 'resolved');
+                                            } else if (rating.status === 'resolved') {
+                                                updateRatingStatus(rating.id, 'pending');
+                                            }
+                                        }}
+                                        className={`px-3 py-1 text-xs font-medium text-white rounded ${
+                                            rating.status === 'pending' ? 'bg-green-600 hover:bg-green-700' :
+                                            rating.status === 'verified' ? 'bg-blue-600 hover:bg-blue-700' :
+                                            'bg-yellow-600 hover:bg-yellow-700'
+                                        }`}
+                                    >
+                                        {rating.status === 'pending' ? 'Verify' :
+                                         rating.status === 'verified' ? 'Resolve' :
+                                         'Reopen'}
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            {filteredRatings.map((rating) => (
-                                <tr key={rating.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900 dark:text-white">{rating.guestName}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                        {rating.roomNumber}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                        <div className="text-xs">
-                                            <div>{rating.checkInDate}</div>
-                                            <div className="text-gray-500 dark:text-gray-400">to {rating.checkOutDate}</div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {displayStars(rating.rating)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                        {rating.category}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="text-sm text-gray-900 dark:text-white max-w-xs truncate" title={rating.comment}>
-                                            {rating.comment}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeStyles(rating.status)}`}>
-                                            {rating.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex gap-2">
-                                            {rating.status === 'pending' && (
-                                                <>
-                                                    <button
-                                                        onClick={() => updateRatingStatus(rating.id, 'verified')}
-                                                        className="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded"
-                                                    >
-                                                        Verify
-                                                    </button>
-                                                    <button
-                                                        onClick={() => updateRatingStatus(rating.id, 'resolved')}
-                                                        className="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded"
-                                                    >
-                                                        Resolve
-                                                    </button>
-                                                </>
-                                            )}
-                                            {rating.status === 'verified' && (
-                                                <button
-                                                    onClick={() => updateRatingStatus(rating.id, 'resolved')}
-                                                    className="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded"
-                                                >
-                                                    Resolve
-                                                </button>
-                                            )}
-                                            {rating.status === 'resolved' && (
-                                                <button
-                                                    onClick={() => updateRatingStatus(rating.id, 'pending')}
-                                                    className="px-3 py-1 text-xs font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded"
-                                                >
-                                                    Reopen
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </main>
         </div>
     );
-}
+};
 
 export default Rating;
