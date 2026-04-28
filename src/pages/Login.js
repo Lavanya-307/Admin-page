@@ -24,7 +24,15 @@ function Login() {
     setLoading(true);
     
     try {
-      await auth.login(email, password);
+      // Mock authentication - accept any email/password
+      const userData = {
+        id: 1,
+        name: 'Admin User',
+        email: email
+      };
+      const token = 'mock-token-' + Date.now();
+      
+      auth.login(userData, token);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Invalid email or password');

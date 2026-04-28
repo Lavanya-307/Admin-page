@@ -62,20 +62,24 @@ const Rooms = () => {
             </div>
 
             
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
                 {currentRoomsToDisplay.map((room) => (
-                    <div key={room.id} className="relative group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow">
-                        {room.image && (
-                            <img 
-                                src={room.image} 
-                                alt={room.title}
-                                className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                            />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                                <h3 className="text-sm font-semibold truncate">{room.title}</h3>
-                                <p className="text-xs opacity-90">Rs.{room.price}/Day</p>
+                    <div key={room.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow p-4 border border-gray-200 dark:border-gray-700">
+                        <div className="flex flex-col h-full">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{room.title}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{room.description}</p>
+                            <div className="flex flex-wrap gap-1 mb-3">
+                                {room.amenities.map((amenity, index) => (
+                                    <span key={index} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                                        {amenity}
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="mt-auto flex justify-between items-center">
+                                <span className="text-lg font-bold text-green-600 dark:text-green-400">Rs.{room.price}/Day</span>
+                                <span className={`text-xs px-2 py-1 rounded ${room.isOccupied ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
+                                    {room.isOccupied ? 'Occupied' : 'Available'}
+                                </span>
                             </div>
                         </div>
                     </div>
