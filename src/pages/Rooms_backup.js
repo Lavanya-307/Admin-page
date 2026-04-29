@@ -6,7 +6,7 @@ const Rooms = () => {
     const [roomList, setRoomList] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPageNumber, setCurrentPageNumber] = useState(1);
-    const roomsToDisplayPerPage = 6;
+    const roomsToDisplayPerPage = 12;
     const [showAddRoomModal, setShowAddRoomModal] = useState(false);
     const [newRoom, setNewRoom] = useState({
         title: "",
@@ -62,6 +62,7 @@ const Rooms = () => {
         console.log('Updated room list:', updatedRoomList);
     };
 
+    
     const getFilteredRooms = () => {
         return roomList.filter((room) => {
             const title = room.title?.toLowerCase() || "";
@@ -110,7 +111,7 @@ const Rooms = () => {
             </div>
 
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
                 {currentRoomsToDisplay.map((room) => (
                     <div key={room.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow p-4 border border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col h-full">
